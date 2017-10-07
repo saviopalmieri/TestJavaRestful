@@ -10,14 +10,25 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+
+import org.springframework.stereotype.Repository;
+
 import com.programmingfree.springservice.domain.*;
-import com.programmingfree.springservice.utility.DBUtility;
 
-public class TaskManagerService {
+@Repository("taskManagerService")
+public class TaskManagerService implements TaskManagerServiceInterface {
 
+	@PersistenceContext
+	private EntityManager em;
+	
 	private Connection connection;
 	 public TaskManagerService() {
-	  connection = DBUtility.getConnection();
+	  //connection = DBUtility.getConnection();
 	 }
 	 public void addTask(Task task) {
 	  try {
@@ -115,4 +126,12 @@ public class TaskManagerService {
 	  }
 	  return task;
 	 }
+	 
+	@Override
+	public List<Task> LoadAllTasks() {
+		CriteriaQuery<Task> criteriaQuery = em.getCriteriaBuilder().createQuery(Task.class);
+		@SuppressWarnings("unused")
+		Root<Task> root = criteriaQuery.from(Task.class);
+		return em.createQuery(criteriaQuery).getResultList();
+	}
 }

@@ -2,23 +2,38 @@ package com.programmingfree.springservice.controller;
 
 import java.text.ParseException;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import com.programmingfree.dao.TaskManagerService;
+import com.programmingfree.service.TaskManagerServicesInterface;
 import com.programmingfree.springservice.domain.Task;
+import com.programmingfree.springservice.utility.AppConfig;
 
 @RestController
+@RequestMapping("/tasklist")
 public class TaskManagerController {
 
-	TaskManagerService taskmanagerservice=new TaskManagerService();
-	  @RequestMapping(value="/tasks",method = RequestMethod.GET,headers="Accept=application/json")
+	  TaskManagerServicesInterface taskManagerServices; //=new TaskManagerService();
+	  
+	  @Autowired(required=true)
+	  public void setTaskmanagerservice(TaskManagerServicesInterface taskManagerServices) {
+		this.taskManagerServices = taskManagerServices;
+	}
+
+	@RequestMapping(value="/tasks",method = RequestMethod.GET,headers="Accept=application/json")
 	  public List<Task> getAllTasks() {  
-	   List<Task> tasks=taskmanagerservice.getAllTasks();
+	   //List<Task> tasks=taskmanagerservice.getAllTasks();
+	  
+	  List<Task> tasks = taskManagerServices.LoadAllTasks();
+	  
 	   return tasks;
 	  }
-	@RequestMapping(value="/tasks/archive/{taskIds}",method = RequestMethod.POST,headers="Accept=application/json")
+	/*@RequestMapping(value="/tasks/archive/{taskIds}",method = RequestMethod.POST,headers="Accept=application/json")
 	  public List<Task> archiveAllTasks(@PathVariable int[] taskIds) { 
 	   for(int i=0;i<taskIds.length;i++){
 	    taskmanagerservice.archiveTask(taskIds[i]); 
@@ -40,6 +55,6 @@ public class TaskManagerController {
 	  task.setTaskStatus(taskStatus);
 	  taskmanagerservice.addTask(task);
 	  return taskmanagerservice.getAllTasks();
-	  }        
+	  }  */      
 
 }
