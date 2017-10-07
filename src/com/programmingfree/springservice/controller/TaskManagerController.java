@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,6 +14,7 @@ import com.programmingfree.dao.TaskManagerService;
 import com.programmingfree.service.TaskManagerServicesInterface;
 import com.programmingfree.springservice.domain.Task;
 import com.programmingfree.springservice.utility.AppConfig;
+import com.programmingfree.springservice.utility.WebServiceResponse;
 
 @RestController
 @RequestMapping("/tasklist")
@@ -26,13 +28,34 @@ public class TaskManagerController {
 	}
 
 	@RequestMapping(value="/tasks",method = RequestMethod.GET,headers="Accept=application/json")
-	  public List<Task> getAllTasks() {  
-	   //List<Task> tasks=taskmanagerservice.getAllTasks();
+	  public WebServiceResponse<List<Task>> getAllTasks() {  
 	  
-	  List<Task> tasks = taskManagerServices.LoadAllTasks();
-	  
-	   return tasks;
+		try {
+			List<Task> tasks = taskManagerServices.LoadAllTasks();
+			  
+			return new WebServiceResponse<List<Task>>(false, "Lista Task", tasks);
+		} catch (Exception e) {
+			return new WebServiceResponse<List<Task>>(true, "Errore 500 - " + e.getMessage(), null);
+		}
 	  }
+	
+	@RequestMapping(value="/writetask",method = RequestMethod.POST)
+	public WebServiceResponse<Task> writeSingleTask(String taskname, String taskdescription) {
+		try {
+			Task newT = new Task();
+			
+			newT.setTaskDescription(taskdescription);
+			newT.setTaskName(taskname);
+			newT.setTaskPriority("0");
+			newT.setTaskStatus("ACTIVE");
+			
+			taskManagerServices.saveTask(newT);
+			
+			return new WebServiceResponse<Task>(false, "Task inserito con successo", newT);
+		} catch (Exception e) {
+			return new WebServiceResponse<Task>(false, "Errore 500 - " + e.getMessage(), null);
+		}
+	}
 	/*@RequestMapping(value="/tasks/archive/{taskIds}",method = RequestMethod.POST,headers="Accept=application/json")
 	  public List<Task> archiveAllTasks(@PathVariable int[] taskIds) { 
 	   for(int i=0;i<taskIds.length;i++){

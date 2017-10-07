@@ -6,4 +6,5 @@ import com.programmingfree.springservice.domain.Task;
 
 public interface TaskManagerServiceInterface {
 	List<Task> LoadAllTasks();
+	void saveTask(Task t);
 }

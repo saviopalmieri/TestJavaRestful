@@ -17,6 +17,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.programmingfree.springservice.domain.*;
 
@@ -128,10 +129,17 @@ public class TaskManagerService implements TaskManagerServiceInterface {
 	 }
 	 
 	@Override
+	@Transactional(readOnly=true)
 	public List<Task> LoadAllTasks() {
 		CriteriaQuery<Task> criteriaQuery = em.getCriteriaBuilder().createQuery(Task.class);
 		@SuppressWarnings("unused")
 		Root<Task> root = criteriaQuery.from(Task.class);
 		return em.createQuery(criteriaQuery).getResultList();
+	}
+	
+	@Override
+	@Transactional(readOnly=false)
+	public void saveTask(Task t) {
+		em.persist(t);
 	}
 }

@@ -23,5 +23,10 @@ public class TaskManagerServices implements TaskManagerServicesInterface {
 	public List<Task> LoadAllTasks() {
 		return taskManagerService.LoadAllTasks();
 	}
+
+	@Override
+	public void saveTask(Task t) {
+		taskManagerService.saveTask(t);
+	}
 	
 }
